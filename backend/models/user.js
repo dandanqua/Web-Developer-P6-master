@@ -14,3 +14,7 @@ const userSchema = mongoose.Schema({
     required: [true, "Please choose a password"]
   }
 })
+
+userSchema.plugin(uniqueValidator);
+
+module.exports = mongoose.model("User", userSchema)

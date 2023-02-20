@@ -3,11 +3,13 @@ const bcrypt = require('bcrypt');
 // It's a package that allows us to create token for authentications
 const jwt = require('jsonwebtoken'); 
 // We get our User model, created with the mongoose schema
-const User = require('../models/user')
+const User = require('../models/user');
+const schema = require('../middleware/password-validator')
 
 // Post request controller for signup
 exports.signup = (req, res, next) => {
-  // We call the encrypt method of bcrypt and we pass it the password of the user, the salte (10) this will be the number of turns we make the algorithm do
+  if(schema.validate(req.body.password) === true) {
+    // We call the encrypt method of bcrypt and we pass it the password of the user, the salte (10) this will be the number of turns we make the algorithm do
     bcrypt.hash(req.body.password, 10)
     // We retrieve the mdp hash that we will register as a new user in the mongoDB 
         .then(hash => {
@@ -22,6 +24,9 @@ exports.signup = (req, res, next) => {
                 .catch(error=> res.status(400).json({ error }));
         })
         .catch(error => res.status(500).json({ error }));
+  } else {
+    res.status(400).json({message: 'Password is too weak'})
+  }
 };
 
 // Post request controller for login. if yes it checks its password, if it is good it returns a TOKEN containing the id of the user, otherwise it returns an error
@@ -47,7 +52,7 @@ exports.login = (req, res, next) => {
                     token: jwt.sign(
                         { userId: user._id },
                         // Encoding of the userdID necessary in the event that a request would transmit a userId
-                        'RANDOM_TOKEN_SECRET',
+                        process.env.SECRET_KEY,
                         { expiresIn: '24h' }
                     )
                     // We encode the userID for the creation of new objects, and this allows to apply the correct userID
