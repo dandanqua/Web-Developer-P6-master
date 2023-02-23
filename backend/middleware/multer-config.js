@@ -8,18 +8,18 @@ const MIME_TYPES = {
   'image/png': 'png'
 };
 
-// this allows us to set the file name and its extentions
+// tells the multer where to save incoming files
 const storage = multer.diskStorage({
-  // Saving in the "images" folder
+  // to save files in the "images" folder
   destination: (req, file, callback) => {
       callback(null, 'images')
   },
-  // Generation of the file name: original name + unique number + . + extension
+  // tells  multer  to use the original name: original name + unique number + . + extension
   filename: (req, file, callback) => {
       const name = file.originalname.split(' ').join('_');
       const extension = MIME_TYPES[file.mimetype];
       callback(null, name + Date.now() + '.' + extension);
   }
 });
-
+// passing it the storage constant, and telling it to handle uploads of single image files.
 module.exports = multer({ storage }).single('image');

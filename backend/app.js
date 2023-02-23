@@ -16,55 +16,10 @@ mongoose.connect(process.env.CONNECTION_URL)
 .then(() => console.log('Connected to mongoDb'))
 .catch(() => console.log('Failed to Connect to mongoDb'))
 
+// Registering the Routers to the App
 app.use(express.json())
 app.use('/images', express.static(path.join(__dirname, 'images')));
-
-// Registering the Routers to the App
 app.use('/api/auth', userRouter);
 app.use('/api/sauces', sauceRouter); 
-//http:localhost:3000/api/auth
-/*
-app.put('/api/stuff/:id', (req, res, next) => {
-  const thing = new Thing({
-    _id: req.params.id,
-    title: req.body.title,
-    description: req.body.description,
-    imageUrl: req.body.imageUrl,
-    price: req.body.price,
-    userId: req.body.userId
-  });
-  Thing.updateOne({_id: req.params.id}, thing).then(
-    () => {
-      res.status(201).json({
-        message: 'Thing updated successfully!'
-      });
-    }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
-});
 
-
-
-
-app.delete('/api/stuff/:id', (req, res, next) => {
-    Thing.deleteOne({_id: req.params.id}).then(
-      () => {
-        res.status(200).json({
-          message: 'Deleted!'
-        });
-      }
-    ).catch(
-      (error) => {
-        res.status(400).json({
-          error: error
-        });
-      }
-    );
-  });
-*/
 module.exports =app;
