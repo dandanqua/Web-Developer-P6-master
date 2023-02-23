@@ -22,7 +22,11 @@ exports.createSauce = (req, res, next) => {
   delete sauceObject._id
   const sauce = new Sauce({
   ...sauceObject,
-  imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+  imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+  likes: 0,
+  dislikes: 0,
+  usersLiked: [],
+  usersDisliked: [],
   });
   sauce.save()
   .then(() => res.status(201).json({ message: 'Post saved successfully !' }))
@@ -36,9 +40,22 @@ exports.modifySauce = (req, res, next) => {
     ...JSON.parse(req.body.sauce),
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
   } : { ...req.body }
-  Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
-  .then(() => res.status(200).json({ message: 'Modified sauce !' }))
-  .catch(error => res.status(400).json({ error }))
+  if(req.file) {
+   Sauce.findOne({_id: req.params.id})
+   .then(sauce => {
+    const filename = sauce.imageUrl.split('/images/')[1] 
+    fs.unlink(`images/${filename}`, () => {
+      Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
+      .then(() => res.status(200).json({ message: 'Modified sauce !' }))
+      .catch(error => res.status(400).json({ error }))
+    })
+   })
+   .catch(err => req.status(404).json(err))
+  } else {
+    Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
+    .then(() => res.status(200).json({ message: 'Modified sauce !' }))
+    .catch(error => res.status(400).json({ error }))
+  }
 }
 
 // Delete a sauce
