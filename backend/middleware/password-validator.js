@@ -1,10 +1,10 @@
-var passwordValidator = require('password-validator');
+const passwordValidator = require('password-validator');
 
 // Create a schema
-var schema = new passwordValidator();
+const passwordSchema = new passwordValidator();
 
 // Add properties to it
-schema
+passwordSchema
 .is().min(8)                                    // Minimum length 8
 .is().max(100)                                  // Maximum length 100
 .has().uppercase()                              // Must have uppercase letters
@@ -13,4 +13,4 @@ schema
 .has().not().spaces()                           // Should not have spaces
 .is().not().oneOf(['Passw0rd', 'Password123']); // Blacklist these values
 
-module.exports = schema;
+module.exports = passwordSchema;
